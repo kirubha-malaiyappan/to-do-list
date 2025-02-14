@@ -5,14 +5,17 @@ import '../constants/app_styles.dart';
 
 class ToDoItem extends StatefulWidget {
   final ToDoObj todo;
-  const ToDoItem({super.key, required this.todo});
+   final Function(String) deleteCallback; 
+ 
+  const ToDoItem({super.key, required this.todo, required this.deleteCallback });
 
   @override
   State<ToDoItem> createState() => _ToDoItemState();
 }
 
 class _ToDoItemState extends State<ToDoItem> {
-   var toDoList = ToDoObj.ListToDo();
+   //var toDoList = ToDoObj.ListToDo();
+   
  
  void _onClicked(){
   
@@ -21,6 +24,9 @@ class _ToDoItemState extends State<ToDoItem> {
   });
  }
 
+void delete(String id) {
+  widget.deleteCallback(id); 
+}
 
 
 
@@ -32,7 +38,7 @@ class _ToDoItemState extends State<ToDoItem> {
         
       },
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 10 , horizontal: 20),
+        padding: const EdgeInsets.symmetric(vertical: 10 , horizontal: 20),
         child: ListTile(
           leading: Icon(
             widget.todo.isDone ?Icons.check_box_rounded : Icons.check_box_outline_blank,
@@ -55,10 +61,12 @@ class _ToDoItemState extends State<ToDoItem> {
             child: Center(
               child: IconButton(
                  padding: EdgeInsets.zero, 
-                 constraints: BoxConstraints(), 
+                 constraints: const BoxConstraints(), 
                 onPressed:
                  (){
                   print("deleting ${widget.todo.id}");
+                  delete(widget.todo.id);
+                  
                   
                  }, 
                  icon: const Icon(

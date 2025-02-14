@@ -42,6 +42,13 @@ class _HomePageState extends State<HomePage> {
     }
     });
   }
+  void _deleteToDoItem(String id) {
+    setState(() {
+      todosList.removeWhere((item) => item.id == id);
+    });
+  }
+
+   
  
   @override
   Widget build(BuildContext context) {
@@ -91,7 +98,10 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                           for (ToDoObj todoo in _foundToDo)
-                              ToDoItem(todo: todoo, )                                        
+                       ToDoItem(
+                           todo: todoo,
+                            deleteCallback: _deleteToDoItem,  // Pass the delete function
+                          ),                                      
               ],
             ),
             )
