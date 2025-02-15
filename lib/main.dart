@@ -1,19 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:practice_apps/Screens/home_page.dart';
+import 'package:practice_apps/Screens/login_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences pref = await SharedPreferences.getInstance();
+  bool isLoggedIn = pref.getBool('isLoggedIn') ?? false; // Ensure it never returns null
+  runApp(MyApp(isLoggedIn: isLoggedIn));
 }
 
+
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool isLoggedIn;
+  const MyApp({super.key, required this.isLoggedIn});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomePage(),
+      home: isLoggedIn ? const HomePage() : const LoginPage(),
     );
   }
 }
