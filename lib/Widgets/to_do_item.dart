@@ -5,9 +5,10 @@ import '../constants/app_styles.dart';
 
 class ToDoItem extends StatefulWidget {
   final ToDoObj todo;
-   final Function(String) deleteCallback; 
+  final Function(String) deleteCallback; 
+  final Function(ToDoObj) isDoneCallback;
  
-  const ToDoItem({super.key, required this.todo, required this.deleteCallback });
+  const ToDoItem({super.key, required this.todo, required this.deleteCallback, required this.isDoneCallback });
 
   @override
   State<ToDoItem> createState() => _ToDoItemState();
@@ -16,13 +17,13 @@ class ToDoItem extends StatefulWidget {
 class _ToDoItemState extends State<ToDoItem> {
    //var toDoList = ToDoObj.ListToDo();
    
- 
- void _onClicked(){
-  
+void _clicked(ToDoObj obj){
   setState(() {
-    widget.todo.isDone = !widget.todo.isDone;
+     widget.isDoneCallback(obj);
   });
- }
+ 
+}
+ 
 
 void delete(String id) {
   widget.deleteCallback(id); 
@@ -32,13 +33,11 @@ void delete(String id) {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        _onClicked();
-        
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10 , horizontal: 20),
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10 , horizontal: 20),
+      child: GestureDetector(
+        onTap: () => _clicked(widget.todo), 
+ 
         child: ListTile(
           leading: Icon(
             widget.todo.isDone ?Icons.check_box_rounded : Icons.check_box_outline_blank,
@@ -48,7 +47,8 @@ void delete(String id) {
             widget.todo.text ,
              style:  TextStyle(
                 fontWeight: FontWeight.w500,
-                decoration: widget.todo.isDone ? TextDecoration.lineThrough : null,
+                decoration: 
+                widget.todo.isDone ? TextDecoration.lineThrough : null,
              ),
             ),
           trailing: Container(
@@ -65,8 +65,7 @@ void delete(String id) {
                 onPressed:
                  (){
                   print("deleting ${widget.todo.id}");
-                  delete(widget.todo.id);
-                  
+                  delete(widget.todo.id);      
                   
                  }, 
                  icon: const Icon(

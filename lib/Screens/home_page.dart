@@ -67,6 +67,14 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  void _onClicked(ToDoObj item){
+  
+  setState(() {
+     item.isDone = !item.isDone;
+     _saveTasks();
+  });
+ }
+
   void _deleteToDoItem(String id) {
     setState(() {
       todosList.removeWhere((item) => item.id == id);
@@ -113,6 +121,7 @@ class _HomePageState extends State<HomePage> {
                     for (ToDoObj todo in _foundToDo)
                       ToDoItem(
                         todo: todo,
+                        isDoneCallback : _onClicked,
                         deleteCallback: _deleteToDoItem,
                       ),
                   ],
