@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:practice_apps/Widgets/to_do_item.dart';
 import 'package:practice_apps/Widgets/to_do_obj.dart';
@@ -12,33 +13,48 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
-  late  SharedPreferences pref;
   final _searchController = TextEditingController();
-  final todosList = ToDoObj.ListToDo();
+  List<ToDoObj> todosList = [];
   List<ToDoObj> _foundToDo = [];
   final _todoController = TextEditingController();
 
   @override
   void initState() {
-    _foundToDo = todosList;
-    initPreferences();
     super.initState();
+    _loadTasks(); // Load saved tasks when the app starts
   }
 
-  void initPreferences() async{
-    pref = await SharedPreferences.getInstance();
+  Future<void> _loadTasks() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? savedTasks = prefs.getString('to_do_list');
+
+    if (savedTasks != null) {
+      final List<dynamic> taskList = jsonDecode(savedTasks);
+      setState(() {
+        todosList = taskList.map((task) => ToDoObj.fromJson(task)).toList();
+        _foundToDo = todosList;
+      });
+    }
   }
-  
+
+  Future<void> _saveTasks() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String encodedData = jsonEncode(todosList.map((task) => task.toJson()).toList());
+    await prefs.setString('to_do_list', encodedData);
+  }
+
   void addVal(String task) {
     if (task.isNotEmpty) {
       setState(() {
-        todosList.add(ToDoObj(
+        final newTask = ToDoObj(
           id: DateTime.now().microsecondsSinceEpoch.toString(),
           text: task,
           isDone: false,
-        ));
+        );
+        todosList.add(newTask);
+        _foundToDo = todosList;
         _todoController.clear();
+        _saveTasks(); // Save tasks after adding
       });
     }
   }
@@ -54,13 +70,12 @@ class _HomePageState extends State<HomePage> {
   void _deleteToDoItem(String id) {
     setState(() {
       todosList.removeWhere((item) => item.id == id);
+      _saveTasks(); // Save tasks after deletion
     });
   }
-  
+
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    
     return Scaffold(
       backgroundColor: AppStyles.bgColor,
       appBar: AppBar(
